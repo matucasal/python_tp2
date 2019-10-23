@@ -11,6 +11,7 @@ statement:
     | while_statement
     | for_statement
     | assign_conjuntostatement
+    | add_conjunto
     ;
 
 for_statement:
@@ -31,6 +32,10 @@ assign_statement:
 
 assign_conjuntostatement:
     VARIABLE '[]=' arr_expression
+    ;
+
+add_conjunto:
+    VARIABLE '[]+' expression
     ;
 
 booleanexpression:

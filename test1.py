@@ -29,6 +29,8 @@ class Visitador(ConjuntosListener):
             self.visitWhileStatement(ctx.children[0])
         elif type(ctx.children[0]) == ConjuntosParser.For_statementContext:
             self.visitForStatement(ctx.children[0])
+        elif type(ctx.children[0]) == ConjuntosParser.Add_conjuntoContext:
+            self.visitAddConjunto(ctx.children[0])
         elif type(ctx.children[0]) == ConjuntosParser.Conjunto_initContext:
             self.visitDeclareConjunto(ctx.children[0])
         else:
@@ -48,22 +50,20 @@ class Visitador(ConjuntosListener):
 
             conditionValue = self.visitBooleanexpression(ctx.children[1])
 
+    def visitAddConjunto(self, ctx:ConjuntosParser.Add_conjuntoContext):
+        value = self.visitArrExpression(ctx.children[2])
+        self.variables[ctx.children[0].symbol.text].append(value[0]) 
+
+
+
     def visitAssignStatement(self, ctx:ConjuntosParser.Assign_statementContext):
         value = self.visitExpression(ctx.children[2])
         self.variables[ctx.children[0].symbol.text] = value
 
 
     def visitAssignConjuntoStatement(self, ctx:ConjuntosParser.Assign_conjuntostatementContext):
-        #value = self.visitExpression(ctx.children[2])
-        #self.variables[ctx.children[0].symbol.text] = value
-        #print(ctx.children[2])
-        
-        #print(self.visitExpression(ctx.children[2]))
-
         value = self.visitArrExpression(ctx.children[2])
         self.variables[ctx.children[0].symbol.text] = value
-
-        #self.variables[ctx.children[0].symbol.text] = thislist
 
     def visitIf_statement(self, ctx:ConjuntosParser.If_statementContext):
         logicValue = self.visitBooleanexpression(ctx.children[1])
@@ -96,9 +96,7 @@ class Visitador(ConjuntosListener):
         listElements = []
         
         #Esto quiere decir que es un array con mas de un componente
-        #if (ctx.children[1].symbol.text  == ","):
         if (len(ctx.children) > 1):
-            print("entre al if")
             for nodo in ctx.children:
                 if type(nodo) == ConjuntosParser.TermContext:
                     listElements.append(self.visitTerm(nodo))
@@ -135,14 +133,11 @@ class Visitador(ConjuntosListener):
                 valor = int(ctx.num.text)
 
         else:
-            print("estoy else del facotr")
             valor = self.visitExpression(ctx.children[1])
 
         return valor
 
 
-
-    
     def visitDeclareConjunto(self, ctx:ConjuntosParser.Conjunto_initContext):
         thislist = []
 
@@ -157,10 +152,10 @@ expr = '''
 a []= 1,2,3
 b []= 4
 c []= 8,7,1
+a []+ 8
 
-b
 a
-c
+
 '''
 
 
