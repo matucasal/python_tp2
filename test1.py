@@ -33,6 +33,18 @@ class Visitador(ConjuntosListener):
             self.visitAddConjunto(ctx.children[0])
         elif type(ctx.children[0]) == ConjuntosParser.Conjunto_initContext:
             self.visitDeclareConjunto(ctx.children[0])
+        elif type(ctx.children[0]) == ConjuntosParser.Union_statementContext:
+            self.visitUnionStatement(ctx.children[0])
+        elif type(ctx.children[0]) == ConjuntosParser.Interseccion_statementContext:
+            self.visitInterseccionStatement(ctx.children[0])
+        elif type(ctx.children[0]) == ConjuntosParser.Difference_statementContext:
+            self.visitDifferenceStatement(ctx.children[0])
+        elif type(ctx.children[0]) == ConjuntosParser.Remove_conjuntoContext:
+            self.visitRemoveConjunto(ctx.children[0])
+        elif type(ctx.children[0]) == ConjuntosParser.Suma_statementContext:
+            self.visitSumaStatement(ctx.children[0])
+        elif type(ctx.children[0]) == ConjuntosParser.Promedio_statementContext:
+            self.visitPromedioStatement(ctx.children[0])
         else:
             #print(type(ctx)) # No deberia llegar nunca
             print("error")
@@ -51,6 +63,7 @@ class Visitador(ConjuntosListener):
             conditionValue = self.visitBooleanexpression(ctx.children[1])
 
     def visitAddConjunto(self, ctx:ConjuntosParser.Add_conjuntoContext):
+        print ("Estoy en add")
         value = self.visitArrExpression(ctx.children[2])
         self.variables[ctx.children[0].symbol.text].append(value[0]) 
 
@@ -143,9 +156,51 @@ class Visitador(ConjuntosListener):
 
         for nodo in ctx.children:
             self.visitExpression(nodo)
-            
 
+    #union_statement
+    def visitUnionStatement (self, ctx:ConjuntosParser.Union_statementContext):
+        print("estoy en la union")
+        final_list = list(set(self.variables[ctx.children[0].symbol.text]) | set(self.variables[ctx.children[2].symbol.text])) 
+        print(final_list )
         
+    #interseccion_statement
+    def visitInterseccionStatement (self, ctx:ConjuntosParser.Interseccion_statementContext):
+        print("estoy en la interseccion")
+        #final_list = list(set(self.variables[ctx.children[0].symbol.text]) | set(self.variables[ctx.children[2].symbol.text])) 
+        final_list = list(set(self.variables[ctx.children[0].symbol.text]) & set(self.variables[ctx.children[2].symbol.text])) 
+        print(final_list )
+
+    #difference_statement
+    def visitDifferenceStatement (self, ctx:ConjuntosParser.Difference_statementContext):
+        print("estoy en la difference")
+        #final_list = list(set(self.variables[ctx.children[0].symbol.text]) | set(self.variables[ctx.children[2].symbol.text])) 
+        final_list = list(set(self.variables[ctx.children[0].symbol.text]) - set(self.variables[ctx.children[2].symbol.text])) 
+        print(final_list )
+
+    #remove_conjunto
+    def visitRemoveConjunto(self, ctx:ConjuntosParser.Remove_conjuntoContext):
+        print ("Estoy en remove")
+        value = self.visitArrExpression(ctx.children[2])
+        #Algo asi tengo que hacer: if thing in some_list: some_list.remove(thing)
+        if value[0] in self.variables[ctx.children[0].symbol.text]: self.variables[ctx.children[0].symbol.text].remove(value[0])
+       
+
+    #suma_statement
+    def visitSumaStatement (self, ctx:ConjuntosParser.Suma_statementContext):
+        print ("Estoy en suma")
+        #Algo asi tengo que hacer: if thing in some_list: some_list.remove(thing)
+        print (sum(self.variables[ctx.children[0].symbol.text]) )
+        
+
+    
+    #promedio_statement
+    def visitPromedioStatement (self, ctx:ConjuntosParser.Promedio_statementContext):
+        print ("Estoy en promedio")
+        print ( self.Average(self.variables[ctx.children[0].symbol.text])  )
+
+    #Metodo para sacar el promedio
+    def Average(self, lst): 
+        return sum(lst) / len(lst) 
 
 
 expr = '''
@@ -153,8 +208,16 @@ a []= 1,2,3
 b []= 4
 c []= 8,7,1
 a []+ 8
+a []- 2
 
 a
+
+a++
+a%
+
+a u c
+a w c
+a diff c
 
 '''
 

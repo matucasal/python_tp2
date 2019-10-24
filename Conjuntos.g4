@@ -12,6 +12,12 @@ statement:
     | for_statement
     | assign_conjuntostatement
     | add_conjunto
+    | union_statement
+    | interseccion_statement
+    | difference_statement
+    | remove_conjunto
+    | suma_statement
+    | promedio_statement
     ;
 
 for_statement:
@@ -34,8 +40,35 @@ assign_conjuntostatement:
     VARIABLE '[]=' arr_expression
     ;
 
+union_statement:
+    VARIABLE 'u' VARIABLE
+    | VARIABLE 'U' VARIABLE
+    ;
+
+interseccion_statement:
+    VARIABLE 'w' VARIABLE
+    | VARIABLE 'W' VARIABLE
+    ;
+
+difference_statement:
+    VARIABLE 'diff' VARIABLE
+    | VARIABLE 'DIFF' VARIABLE
+    ;
+
 add_conjunto:
     VARIABLE '[]+' expression
+    ;
+
+remove_conjunto:
+    VARIABLE '[]-' expression
+    ;
+
+suma_statement:
+    VARIABLE '++' 
+    ;
+
+promedio_statement:
+    VARIABLE '%' 
     ;
 
 booleanexpression:
